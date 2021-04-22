@@ -3,31 +3,34 @@ pipeline {
     node {
       label 'alpine'
     }
+
   }
-
-  // environment {
-  //   DOCKER_CREDENTIAL_ID = 'dockerhub-id'
-  //   GITHUB_CREDENTIAL_ID = 'github-id'
-  //   KUBECONFIG_CREDENTIAL_ID = 'demo-kubeconfig'
-  //   REGISTRY = 'docker.io'
-  //   DOCKERHUB_NAMESPACE = 'docker_username'
-  //   GITHUB_ACCOUNT = 'kubesphere'
-  //   APP_NAME = 'devops-java-sample'
-  // }
-
   stages {
-    stage ('checkout scm') {
-      steps {
-        checkout(scm)
+    stage('checkout scm') {
+      parallel {
+        stage('checkout scm') {
+          steps {
+            checkout scm
+          }
+        }
+
+        stage('') {
+          steps {
+            archiveArtifacts(artifacts: 'README.md', fingerprint: true)
+          }
+        }
+
       }
     }
 
-    stage ('test') {
+    stage('test') {
       steps {
-        container ('alpine') {
+        container(name: 'alpine') {
           sh 'echo hello-world'
         }
+
       }
     }
+
   }
 }
